@@ -68,6 +68,7 @@
 #include <tf2_eigen/tf2_eigen.h>
 #include <Eigen/Geometry>
 #include <limits>
+#include <filesystem>
 
 #define INIT_TIME (0.1)
 #define LASER_POINT_COV (0.001)
@@ -1156,6 +1157,16 @@ public:
         this->get_parameter_or<int>("pcd_save.interval", pcd_save_interval, -1);
         this->get_parameter_or<vector<double>>("mapping.extrinsic_T", extrinT, vector<double>());
         this->get_parameter_or<vector<double>>("mapping.extrinsic_R", extrinR, vector<double>());
+
+        try
+        {
+            std::filesystem::create_directories(root_dir + "/Log");
+            std::filesystem::create_directories(root_dir + "/PCD");
+        }
+        catch (const std::exception &e)
+        {
+            std::cerr << "Failed to create dirs: " << e.what() << std::endl;
+        }
 
         RCLCPP_INFO(this->get_logger(), "p_pre->lidar_type %d", p_pre->lidar_type);
 
